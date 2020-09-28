@@ -21,8 +21,8 @@ namespace RealEstateAdsEntities
         [MaxLength(100)]
         public string Discription { get; set; }
 
-        public int RentingPrice { get; set; }
-        public int PurchasePrice { get; set; }
+        public int? RentingPrice { get; set; }
+        public int? PurchasePrice { get; set; }
 
         public bool CanBeRented { get; set; }
         public bool CanBeBought { get; set; }
@@ -39,7 +39,7 @@ namespace RealEstateAdsEntities
 
 
         [ForeignKey("UserId")]
-        public User User { get; set; }
+        public User Creator { get; set; }
         public int UserId { get; set; }
         public List<Comment> Comments { get; set; } = new List<Comment>();
 

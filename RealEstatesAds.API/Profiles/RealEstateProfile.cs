@@ -12,8 +12,11 @@ namespace RealEstatesAds.API.Profiles
         public RealEstateProfile()
         {
             CreateMap<RealEstate, Models.RealEstateDto>();
+
             CreateMap<RealEstate, Models.RealEstateDetailsDto>();
+
             CreateMap<RealEstate, Models.RealEstateDetailsPrivateDto>();
+
             CreateMap<Models.CreateRealEstateDto, RealEstate>();
         }
     }

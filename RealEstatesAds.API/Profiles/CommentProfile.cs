@@ -11,7 +11,10 @@ namespace RealEstatesAds.API.Profiles
     {
         public CommentProfile()
         {
-            CreateMap<Comment, Models.CommentDto>();
+            CreateMap<Comment, Models.CommentDto>().ForMember(
+                    dest => dest.UserName,
+                    opt => opt.MapFrom(src => $"{src.Creator.Name}"));
+
             CreateMap<Models.CreateCommentDto, Comment>();
         }
     }

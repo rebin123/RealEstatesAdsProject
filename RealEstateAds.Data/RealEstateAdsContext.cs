@@ -10,7 +10,7 @@ namespace RealEstateAds.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Comment>()
-                .HasOne(u => u.User).WithMany()
+                .HasOne(u => u.RealEstate).WithMany()
                 .IsRequired()
                 .OnDelete(DeleteBehavior.Restrict);
         }

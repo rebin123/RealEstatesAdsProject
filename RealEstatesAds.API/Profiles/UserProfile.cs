@@ -12,10 +12,17 @@ namespace RealEstatesAds.API.Profiles
     {
         public UserProfile()
         {
-            CreateMap<User, Models.UserDto>();
-            CreateMap<Models.CreateUserDto, User>();
-            CreateMap<UpdateUser, User>();
+            CreateMap<User, Models.UserDto>().ForMember(
+                    dest => dest.RealEstates,
+                    opt => opt.MapFrom(src => src.RealEstates.Count())).ForMember(
+                    dest => dest.Comments,
+                    opt => opt.MapFrom(src => src.Comments.Count()));
 
+            CreateMap<Models.UserDto, User>();
+
+            CreateMap<Models.CreateUserDto, User>();
+
+            CreateMap<UpdateUser, User>();
         }
     }
 }

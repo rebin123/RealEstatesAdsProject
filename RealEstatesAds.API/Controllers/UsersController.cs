@@ -16,44 +16,39 @@ namespace RealEstatesAds.API.Controllers
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly IUserRepos userRepo;
+        private readonly IUserRepo userRepo;
         private readonly IMapper _mapper;
 
-        public UsersController(IUserRepos userRepo, IMapper mapper)
+        public UsersController(IUserRepo userRepo, IMapper mapper)
         {
             this.userRepo = userRepo;
             _mapper = mapper;
         }
 
-        [HttpGet("{realEstateId}", Name = "GetRealEstate")]
-        [Route("api/Users/{userName}")]
-        public IActionResult GetUser(string userName)
-        {
-            var userFromRepo = userRepo.GetUserInfo(userName);
+        [HttpGet()]
+        public ActionResult<IEnumerable<UserDto>> GetUser()
+        {            
+            var userFromRepo = userRepo.GetUsers();
             return Ok(_mapper.Map<IEnumerable<UserDto>>(userFromRepo));
         }
 
-        [HttpPut("{id}")]
-        [Route("api/Users/Rate")]
-        public IActionResult Rate(int id, [FromBody] UpdateUser user)
+        [HttpGet("{userName}", Name = "GetUser")]
+        public IActionResult GetUser(string userName)
         {
-            // map model to entity and set id
-            var updateUser = _mapper.Map<User>(user);
-            updateUser.Id = id;
+            var userFromRepo = userRepo.GetUser(userName);
+            return Ok(_mapper.Map<UserDto>(userFromRepo));
+        }
 
-            //try
-            //{
-            //    // update user 
-            //    userRepo.Update(user, user.);
-            //    return Ok();
-            //}
-            //catch (AppException ex)
-            //{
-            //    // return error message if there was an exception
-            //    return BadRequest(new { message = ex.Message });
-            //}
+        [HttpPut("Rate")]
+        public IActionResult Rate(UpdateUser user)
+        {
+            var userFromRepo = userRepo.GetUser(user.UserId);
+            if (userFromRepo == null) return NotFound();
 
-            return NoContent();
+            userRepo.RateUser(user.UserId, user.Value);
+            userRepo.Save();
+
+            return Ok();
         }
     }
 }

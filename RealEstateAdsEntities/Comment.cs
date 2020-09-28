@@ -15,11 +15,10 @@ namespace RealEstateAdsEntities
 
         [ForeignKey("RealEstateId")]
         public RealEstate RealEstate { get; set; }
-        public int RealEstateId { get; set; }
-
+        public int? RealEstateId { get; set; }
 
         [ForeignKey("UserId")]
-        public User User { get; set; }
-        public int UserId { get; set; }
+        public User Creator { get; set; }
+        public int? UserId { get; set; }
     }
 }

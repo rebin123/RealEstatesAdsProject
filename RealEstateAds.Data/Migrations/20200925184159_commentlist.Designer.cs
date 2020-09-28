@@ -10,8 +10,8 @@ using RealEstateAds.Data;
 namespace RealEstateAds.Data.Migrations
 {
     [DbContext(typeof(RealEstateAdsContext))]
-    [Migration("20200911130701_initcreatecontext")]
-    partial class initcreatecontext
+    [Migration("20200925184159_commentlist")]
+    partial class commentlist
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -28,10 +28,10 @@ namespace RealEstateAds.Data.Migrations
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<string>("Contect")
+                    b.Property<string>("Content")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Created")
+                    b.Property<DateTime>("CreatedOn")
                         .HasColumnType("datetime2");
 
                     b.Property<int>("RealEstateId")
@@ -40,50 +40,13 @@ namespace RealEstateAds.Data.Migrations
                     b.Property<int>("UserId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("UserId1")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
 
                     b.HasIndex("RealEstateId");
 
                     b.HasIndex("UserId");
 
-                    b.HasIndex("UserId1");
-
                     b.ToTable("Comments");
-                });
-
-            modelBuilder.Entity("RealEstateAdsEntities.Contact", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("RealEstateId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("RealEstateId")
-                        .IsUnique();
-
-                    b.ToTable("Contacts");
                 });
 
             modelBuilder.Entity("RealEstateAdsEntities.Rating", b =>
@@ -127,24 +90,28 @@ namespace RealEstateAds.Data.Migrations
                     b.Property<int>("ConstructionYear")
                         .HasColumnType("int");
 
+                    b.Property<string>("Contact")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedOn")
+                        .HasColumnType("datetime2");
+
                     b.Property<string>("Discription")
                         .IsRequired()
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
 
-                    b.Property<string>("Name")
+                    b.Property<int?>("PurchasePrice")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("RentingPrice")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
-
-                    b.Property<DateTime>("Published")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("PurchasePrice")
-                        .HasColumnType("int");
-
-                    b.Property<int>("RentingPrice")
-                        .HasColumnType("int");
 
                     b.Property<string>("Type")
                         .IsRequired()
@@ -170,10 +137,8 @@ namespace RealEstateAds.Data.Migrations
                     b.Property<double?>("AverageRating")
                         .HasColumnType("float");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(100)")
-                        .HasMaxLength(100);
+                    b.Property<int>("Comments")
+                        .HasColumnType("int");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -185,6 +150,9 @@ namespace RealEstateAds.Data.Migrations
                         .HasColumnType("nvarchar(100)")
                         .HasMaxLength(100);
 
+                    b.Property<int>("RealEstatesC")
+                        .HasColumnType("int");
+
                     b.HasKey("Id");
 
                     b.ToTable("Users");
@@ -193,27 +161,14 @@ namespace RealEstateAds.Data.Migrations
             modelBuilder.Entity("RealEstateAdsEntities.Comment", b =>
                 {
                     b.HasOne("RealEstateAdsEntities.RealEstate", "RealEstate")
-                        .WithMany("Comments")
-                        .HasForeignKey("RealEstateId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("RealEstateAdsEntities.User", "User")
                         .WithMany()
-                        .HasForeignKey("UserId")
+                        .HasForeignKey("RealEstateId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("RealEstateAdsEntities.User", null)
-                        .WithMany("Comments")
-                        .HasForeignKey("UserId1");
-                });
-
-            modelBuilder.Entity("RealEstateAdsEntities.Contact", b =>
-                {
-                    b.HasOne("RealEstateAdsEntities.RealEstate", "RealEstate")
-                        .WithOne("Contact")
-                        .HasForeignKey("RealEstateAdsEntities.Contact", "RealEstateId")
+                    b.HasOne("RealEstateAdsEntities.User", "Creator")
+                        .WithMany()
+                        .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
@@ -229,8 +184,8 @@ namespace RealEstateAds.Data.Migrations
 
             modelBuilder.Entity("RealEstateAdsEntities.RealEstate", b =>
                 {
-                    b.HasOne("RealEstateAdsEntities.User", "User")
-                        .WithMany()
+                    b.HasOne("RealEstateAdsEntities.User", "Creator")
+                        .WithMany("RealEstates")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();

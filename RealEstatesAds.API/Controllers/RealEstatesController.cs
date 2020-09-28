@@ -16,19 +16,19 @@ namespace RealEstatesAds.API.Controllers
     [ApiController]
     public class RealEstatesController : ControllerBase
     {
-        private readonly IRealEstateRepo realEstateRepo;
+        private readonly IUserRepo realEstateRepo;
         private readonly IMapper _mapper;
 
-        public RealEstatesController(IRealEstateRepo realEstateRepo, IMapper mapper)
+        public RealEstatesController(IUserRepo realEstateRepo, IMapper mapper)
         {
             this.realEstateRepo = realEstateRepo;
             _mapper = mapper;
         }
 
         [HttpGet()]
-        public ActionResult<IEnumerable<RealEstateDto>> GetRealEstates([FromQuery]string skip = "", [FromQuery] string take = "10")
+        public ActionResult<IEnumerable<RealEstateDto>> GetRealEstates([FromQuery] string skip = "", [FromQuery] string take = "10")
         {
-            var realEstateFromRepo = realEstateRepo.GetRealEstates(skip,take);
+            var realEstateFromRepo = realEstateRepo.GetRealEstates(skip, take);
             return Ok(_mapper.Map<IEnumerable<RealEstateDto>>(realEstateFromRepo));
         }
 
@@ -36,17 +36,20 @@ namespace RealEstatesAds.API.Controllers
         public IActionResult GetRealEstates(int realEstateId)
         {
             var realEstateFromRepo = realEstateRepo.GetRealEstate(realEstateId);
-
             if (realEstateFromRepo == null) return NotFound();
+           
+            if(User.Identity.IsAuthenticated) return Ok(_mapper.Map<RealEstateDetailsPrivateDto>(realEstateFromRepo));
 
-            return Ok(_mapper.Map<RealEstateDto>(realEstateFromRepo));
+            return Ok(_mapper.Map<RealEstateDetailsDto>(realEstateFromRepo));
         }
 
+        [Authorize]
         [HttpPost]
         public ActionResult<RealEstateDto> CreateRealEstate(CreateRealEstateDto realEstate)
         {
+            var user = realEstateRepo.GetUser(User.Identity.Name);
             var realEstateEntity = _mapper.Map<RealEstate>(realEstate);
-            realEstateRepo.AddRealEstate(realEstateEntity);
+            realEstateRepo.AddRealEstate(user.Id, realEstateEntity);
             realEstateRepo.Save();
 
             var realEstateToReturn = _mapper.Map<RealEstateDto>(realEstateEntity);
